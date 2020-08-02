@@ -17,7 +17,7 @@ export type Result = {
     locations: Location[];
 }
 
-export const getResultsFromResponse = ({ results }: Response): Result[] => {
+export const getResultsFromResponse = function getResultsFromResponse({ results }: Response): Result[] {
     results = results ?? [];
 
     return results.filter(result => result.locations?.length);
@@ -58,8 +58,9 @@ export type Location = Partial<{
     mapUrl: string;
 }>
 
-export const getLocationsFromResults = (results: Result[]): Location[] =>
-    results.flatMap(result => [...result.locations]);
+export const getLocationsFromResults = function getLocationFromResults(results: Result[]): Location[] {
+    return results.flatMap(result => [...result.locations]);
+}
 
 export const getLocationsFromResponse = pipe(
     getResultsFromResponse,
@@ -84,9 +85,13 @@ export const enum StatusCodes {
     Error = 500,
 }
 
-export const isSuccessResponse = (status: number) => status === StatusCodes.Ok;
+export const isSuccessResponse = function isSuccessResponse(status: number) {
+    return status === StatusCodes.Ok;
+}
 
-export const isErrorResponse = (status: number) => status >= StatusCodes.BadInput;
+export const isErrorResponse = function isErrorResponse(status: number) {
+    return status >= StatusCodes.BadInput;
+}
 
 export const enum Confidence {
     Exact = 'A',
@@ -95,12 +100,22 @@ export const enum Confidence {
     Unused = 'X',
 }
 
-export const isExactMatch = (confidence: string) => confidence === Confidence.Exact;
+export const isExactMatch = function isExactMatch(confidence: string) {
+    return confidence === Confidence.Exact;
+}
 
-export const isGoodMatch = (confidence: string) => confidence === Confidence.Good;
+export const isGoodMatch = function isGoodMatch(confidence: string) {
+    return confidence === Confidence.Good;
+}
 
-export const isApproximateMatch = (confidence: string) => confidence === Confidence.Approximate;
+export const isApproximateMatch = function isApproximateMatch(confidence: string) {
+    return confidence === Confidence.Approximate;
+}
 
-export const isUnusedGranularity = (confidence: string) =>  confidence === Confidence.Unused;
+export const isUnusedGranularity = function isUnusedGranularity(confidence: string) {
+    return confidence === Confidence.Unused;
+}
 
-export const getPostalCodeConfidence = (qualityCode: string) => qualityCode.substr(-1);
+export const getPostalCodeConfidence = function getPostalCodeConfidence(qualityCode: string) {
+    return qualityCode.substr(-1);
+}
