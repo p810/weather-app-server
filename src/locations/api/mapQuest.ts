@@ -10,20 +10,14 @@ import {
 import {
     LocationModel,
     Location,
-    getRegionByCode,
     Coordinates,
+    RegionByCode,
 } from '../entities/Location';
 
-import { HttpAdapter, ApiConfig } from '../../http';
-import LocationApiClient from './location';
+import { LocationApiClient } from './location';
 import { filterByAll } from '../../util/filter';
 
-export default class MapQuestClient implements LocationApiClient {
-    constructor(
-        readonly config: ApiConfig,
-        readonly adapter: HttpAdapter,
-    ) {}
-
+export class MapQuestClient extends LocationApiClient {
     async getLocationByZip(zip: string | number): Promise<LocationModel> {
         const url = this.config.getUrlFor('address', {
             key: this.config.options.key,
@@ -88,30 +82,33 @@ export default class MapQuestClient implements LocationApiClient {
     }
 }
 
-const hasZipQualityCode = (location: GeocoderLocation) => location.geocodeQuality === Quality.Zip;
+const hasZipQualityCode = function hasZipQualityCode(location: GeocoderLocation) {
+    return location.geocodeQuality === Quality.Zip;
+}
 
-const hasUsCountryCode = (location: GeocoderLocation) => location.adminArea1 === 'US';
+const hasUsCountryCode = function hasUsCountryCode(location: GeocoderLocation) {
+    return location.adminArea1 === 'US';
+}
 
-const hasRequiredParameters = (location: GeocoderLocation) =>
-    !! location.adminArea1 &&
-    !! location.adminArea3 &&
-    !! location.adminArea5 &&
-    !! location.postalCode &&
-    !! location.latLng;
+const hasRequiredParameters = function hasRequiredParameters(location: GeocoderLocation) {
+    let required = [
+        'adminArea1',
+        'adminArea3',
+        'adminArea5',
+        'postalCode',
+        'latLng',
+    ];
 
-const transformGeocoderLocation = ({
-    postalCode,
-    latLng: {
-        lat: lat,
-        lng: lng,
-    },
-    adminArea5: city,
-    adminArea3: state,
-}: Partial<GeocoderLocation>): LocationModel => {
-    return Location(
-        city,
-        getRegionByCode(state),
+    return required.every(prop => !! location[prop]);
+}
+
+const transformGeocoderLocation = function transformGeocoderLocation(location: GeocoderLocation) {
+    const {
         postalCode,
-        Coordinates(lat, lng)
-    );
+        latLng: {lat, lng},
+        adminArea5: city,
+        adminArea3: state,
+    } = location;
+
+    return Location(city, RegionByCode(state), postalCode, Coordinates(lat, lng));
 }

@@ -1,12 +1,12 @@
 import { config, returnLocations } from '../mocks/mapQuest';
 import { Coordinates, Region } from '../../src/locations/entities/location';
-import MapQuestClient from '../../src/locations/api/mapQuest';
+import { MapQuestClient } from '../../src/locations/api/mapQuest';
 import { FetchAdapter } from '../../src/http';
 import { setupFetchMock } from '../mocks/fetch';
 
 const adapter = new FetchAdapter();
 
-const client = new MapQuestClient(config, adapter);
+const client = new MapQuestClient(adapter, config);
 
 it('should return a location result response', async () => {
     const restore = setupFetchMock(mock => mock.mockImplementationOnce(returnLocations));
