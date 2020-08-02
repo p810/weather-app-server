@@ -1,4 +1,4 @@
-{
+export const codeToState = {
     "codeToName": {
         "AL": "Alabama",
         "AK": "Alaska",
