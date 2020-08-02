@@ -28,7 +28,7 @@ export class BaseApiConfig implements ApiConfig {
     }
 }
 
-export const getQueryString = (params: object) => {
+export const getQueryString = function getQueryString(params: object) {
     let parts: string[] = [];
 
     for (let pair of Object.entries(params)) {
@@ -40,7 +40,7 @@ export const getQueryString = (params: object) => {
     return parts.join('&');
 }
 
-export const getWithoutTrailingSlash = (subject: string) => {
+export const getWithoutTrailingSlash = function getWithoutTrailingSlash(subject: string) {
     if (subject.substr(-1) === '/') {
         subject = subject.substr(0, subject.length - 1);
     }
@@ -48,7 +48,7 @@ export const getWithoutTrailingSlash = (subject: string) => {
     return subject;
 }
 
-export const getWithoutLeadingSlash = (subject: string) => {
+export const getWithoutLeadingSlash = function getWithoutLeadingSlash(subject: string) {
     if (subject.substr(0, 1) === '/') {
         subject = subject.substr(1);
     }
@@ -56,25 +56,14 @@ export const getWithoutLeadingSlash = (subject: string) => {
     return subject;
 }
 
-const getWithoutSurroundingSlashes = pipe(
-    getWithoutLeadingSlash,
-    getWithoutTrailingSlash,
-);
+const getWithoutSurroundingSlashes = pipe(getWithoutLeadingSlash, getWithoutTrailingSlash);
 
 export interface HttpAdapter {
-    request<T extends unknown>(
-        url: string,
-        method?: string,
-        options?: object,
-    ): Promise<T>
+    request<T>(url: string, method?: string, options?: object): Promise<T>;
 }
 
 export class FetchAdapter implements HttpAdapter {
-    async request<T extends unknown>(
-        url: string,
-        method: string = 'GET',
-        options: object = {},
-    ): Promise<T> {
+    async request<T>(url: string, method: string = 'GET', options: object = {}): Promise<T> {
         Object.assign(options, { method });
 
         const response = await fetch(url, options);
@@ -85,5 +74,34 @@ export class FetchAdapter implements HttpAdapter {
 
 export interface ApiClient {
     config?: ApiConfig;
+
     adapter: HttpAdapter;
+}
+
+export class ApiRequestError extends Error {
+    constructor(message?: string, readonly isRecoverable: boolean = true) {
+        super(message);
+    }
+}
+
+export const ApiResult = function getApiResult<T extends {[key: string]: any}>(
+    payload: T,
+    statusCode: number = 200,
+    headers?: {[key: string]: string}
+) {
+    return {
+        payload,
+        statusCode,
+        headers,
+    };
+}
+
+export type ApiResultObject = ReturnType<typeof ApiResult>;
+
+export const isErrorResult = function isErrorResult(result: ApiResultObject) {
+    return 'error' in result.payload;
+}
+
+export const isRecoverable = function isErrorRecoverable(e: Error) {
+    return e instanceof ApiRequestError && e.isRecoverable;
 }
