@@ -18,6 +18,8 @@
     },
     "include": [
         "src/**/*",
+        "clients.config.ts",
+        "api.config.ts",
     ],
     "exclude": [
         "node_modules/",
