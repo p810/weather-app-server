@@ -4,7 +4,8 @@
   "description": "REST API for the React Native weather app",
   "main": "./dist/index.js",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.7",
@@ -18,7 +19,7 @@
   "scripts": {
     "test": "jest",
     "compile": "tsc",
-    "start": "tsc && node ./dist/index.js"
+    "start": "tsc && node ./dist/src/index.js"
   },
   "author": "Payton Bice",
   "license": "MIT"
