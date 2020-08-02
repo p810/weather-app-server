@@ -1,14 +1,35 @@
-export const matchesEach = (...fns: Function[]) => val => fns.every(fn => fn(val));
+export const matchesEach = function getMatchesEachCallback(...fns: Function[]) {
+    return function matchesEach(value: any) {
+        return fns.every(fn => fn(value));
+    }
+}
 
-export const matchesSome = (...fns: Function[]) => val => fns.some(fn => fn(val));
+export const matchesSome = function getMatchesSomeCallback(...fns: Function[]) {
+    return function matchesSome(value: any) {
+        return fns.some(fn => fn(value));
+    }
+}
 
-export const matchesNone = (...fns: Function[]) => val => fns.every(fn => ! fn(val));
+export const matchesNone = function getMatchesNoneCallback(...fns: Function[]) {
+    return function matchesNone(value: any) {
+        return fns.every(fn => ! fn(value));
+    }
+}
 
-export const filterByAll = <T>(...filters: Function[]) => (...vals: T[]) =>
-    vals.filter(val => matchesEach(...filters)(val));
+export const filterByAll = function getFilterMatchingAll<T>(...filters: Function[]) {
+    return function filterByAll(...vals: T[]) {
+        return vals.filter(val => matchesEach(...filters)(val));
+    }
+}
 
-export const filterByAny = <T>(...filters: Function[]) => (...vals: T[]) =>
-    vals.filter(val => matchesSome(...filters)(val));
+export const filterByAny = function getFilterMatchingAny<T>(...filters: Function[]) {
+    return function filterByAny(...vals: T[]) {
+        return vals.filter(val => matchesSome(...filters)(val));
+    }
+}
 
-export const filterByNone = <T>(...filters: Function[]) => (...vals: T[]) =>
-    vals.filter(val => matchesNone(...filters)(val));
+export const filterByNone = function getFilterMatchingNone<T>(...filters: Function[]) {
+    return function filterByNone(...vals: T[]) {
+        return vals.filter(val => matchesNone(...filters)(val));
+    }
+}
