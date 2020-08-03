@@ -8,9 +8,7 @@ global.fetch = require('node-fetch');
 
 const app = express();
 
-const logger = new StackLogger(
-    new ConsoleLogger(),
-);
+const logger = new StackLogger(new ConsoleLogger());
 
 const locationCtrl = new ResponderFactory(clientMap[Domains.Location], logger);
 const weatherCtrl = new ResponderFactory(clientMap[Domains.Weather], logger);
