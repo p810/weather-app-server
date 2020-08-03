@@ -1,3 +1,1 @@
-const fetchPolyfill = require('whatwg-fetch');
-
-global.fetch = fetchPolyfill.fetch;
+global.fetch = require('node-fetch');
